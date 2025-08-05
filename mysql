@@ -1,0 +1,87 @@
+-- Create the database
+CREATE DATABASE IF NOT EXISTS medicine_app;
+USE medicine_app;
+
+-- Users Table
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(255),
+    role ENUM('customer', 'doctor', 'admin') DEFAULT 'customer'
+);
+
+-- Medicines Table
+CREATE TABLE IF NOT EXISTS medicines (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    price DECIMAL(10,2),
+    stock INT,
+    category VARCHAR(50),
+    description TEXT,
+    expiry_date DATE,
+    prescription_required BOOLEAN DEFAULT FALSE
+);
+
+-- Cart Table
+CREATE TABLE IF NOT EXISTS cart (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    medicine_id INT,
+    quantity INT,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (medicine_id) REFERENCES medicines(id)
+);
+
+-- Orders Table
+CREATE TABLE IF NOT EXISTS orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    total DECIMAL(10,2),
+    order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('pending','delivered','cancelled') DEFAULT 'pending',
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- Order Items Table
+CREATE TABLE IF NOT EXISTS order_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT,
+    medicine_id INT,
+    quantity INT,
+    price DECIMAL(10,2),
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (medicine_id) REFERENCES medicines(id)
+);
+
+-- Consultations Table
+CREATE TABLE IF NOT EXISTS consultations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    doctor_id INT,
+    message TEXT,
+    consultation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('pending', 'completed') DEFAULT 'pending',
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (doctor_id) REFERENCES users(id)
+);
+
+-- Insert sample medicines
+INSERT INTO medicines (id, name, price, stock, category, description, expiry_date, prescription_required) VALUES
+(1, "Paracetamol", 20, 50, "Tablet", "Used to treat pain and fever.", "2026-01-31", 0),
+(2, "Aspirin", 15, 30, "Tablet", "Pain reliever and anti-inflammatory.", "2025-12-15", 0),
+(3, "Cough Syrup", 60, 20, "Syrup", "Relieves cough and soothes throat.", "2025-11-30", 0),
+(4, "Vitamin C", 25, 0, "Tablet", "Boosts immunity and overall health.", "2026-03-10", 0),
+(5, "Antacid", 40, 10, "Syrup", "Neutralizes stomach acid to relieve indigestion.", "2025-09-25", 0),
+(6, "Ibuprofen", 22, 40, "Tablet", "Reduces fever and treats pain or inflammation.", "2026-06-30", 0),
+(7, "Cetirizine", 18, 25, "Tablet", "Antihistamine for allergy relief.", "2025-10-20", 0),
+(8, "Amoxicillin", 55, 15, "Capsule", "Antibiotic used to treat bacterial infections.", "2026-08-15", 1),
+(9, "Azithromycin", 65, 12, "Tablet", "Antibiotic for respiratory and skin infections.", "2025-12-01", 1),
+(10, "Diclofenac Gel", 35, 18, "Gel", "Topical gel for relieving joint and muscle pain.", "2026-02-28", 0),
+(11, "Loratadine", 24, 22, "Tablet", "Non-drowsy antihistamine for allergy symptoms.", "2026-05-20", 0),
+(12, "Metformin", 28, 35, "Tablet", "Used to control blood sugar in type 2 diabetes.", "2026-04-15", 1),
+(13, "Omeprazole", 32, 27, "Capsule", "Reduces stomach acid production.", "2025-11-10", 1),
+(14, "ORS Sachet", 10, 60, "Powder", "Oral rehydration salts for dehydration treatment.", "2026-01-01", 0),
+(15, "Saline Nasal Spray", 45, 14, "Spray", "Moisturizes nasal passages and relieves congestion.", "2025-01-01", 0);
+
+select* from orders;
